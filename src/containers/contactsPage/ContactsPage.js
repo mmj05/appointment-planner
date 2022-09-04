@@ -1,65 +1,62 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
 import { ContactForm } from "../../components/contactForm/ContactForm";
 import { TileList } from "../../components/tileList/TileList";
 
 export const ContactsPage = ({ contacts, addContact }) => {
-  
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-
-  const isDuplicate = (contact) => {
-    const names = contacts.map(contact => contact.name);
-    if (names.includes(contact.name)) {
-      return true;
-    }
-    return false;
-  };
-
-  const onNameChange = (e) => {
-    setName(e.target.value);
-  };
-
-  const onEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const onPhoneChange = (e) => {
-    setPhone(e.target.value);
-  };
-
-  const clearData = () => {
-    setName('');
-    setPhone('');
-    setEmail('');
-  }
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [duplicate, setDuplicate] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (isDuplicate === false) {
-      addContact({ name, phone, email });
+    if (!duplicate) {
+      addContact(name, phone, email);
+      setName("");
+      setPhone("");
+      setEmail("");
     }
-    clearData();
   };
 
+  useEffect(() => {
+    const nameIsDuplicate = () => {
+      const found = contacts.find((contact) => contact.name === name);
+      if (found !== undefined) {
+        return true;
+      }
+      return false;
+    };
+
+    if (nameIsDuplicate()) {
+      setDuplicate(true);
+    } else {
+      setDuplicate(false);
+    }
+  }, [name, contacts, duplicate]);
+
   return (
-    <div>
+    <>
       <section>
-        <h2>Add Contact</h2>
-        <ContactForm 
+        <h2>
+          Add Contact
+          {duplicate ? " - Name Already Exists" : ""}
+        </h2>
+        <ContactForm
           name={name}
-          setName={onNameChange}
+          setName={setName}
           phone={phone}
-          setPhone={onPhoneChange}
+          setPhone={setPhone}
           email={email}
-          setEmail={onEmailChange}
-          handleSubmit={handleSubmit} />
+          setEmail={setEmail}
+          handleSubmit={handleSubmit}
+        />
       </section>
       <hr />
       <section>
         <h2>Contacts</h2>
-        <TileList arr={contacts} />
+        <TileList tiles={contacts} />
       </section>
-    </div>
+    </>
   );
 };

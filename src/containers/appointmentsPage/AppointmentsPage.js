@@ -1,72 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
 import { AppointmentForm } from "../../components/appointmentForm/AppointmentForm";
 import { TileList } from "../../components/tileList/TileList";
 
-export class AppointmentsPage extends React.Component {
-  state = {
-    title: '',
-    contact: '',
-    date: '',
-    time: ''
-  };
+export const AppointmentsPage = ({
+  appointments,
+  addAppointment,
+  contacts
+}) => {
+  const [title, setTitle] = useState("");
+  const [contact, setContact] = useState(
+    contacts.length > 0 ? contacts[0].name : ""
+  );
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
 
-  onTitleChange = (e) => {
-    this.setState({ title: e.target.value })
-  };
-
-  onContactChange = (e) => {
-    this.setState({ contact: e.target.value })
-  };
-
-  onDateChange = (e) => {
-    this.setState({ date: e.target.value })
-  };
-
-  onTimeChange = (e) => {
-    this.setState({ time: e.target.value })
-  };
-
-  clearData = () => {
-    this.setState({
-      title: '',
-      contact: '',
-      date: '',
-      time: ''
-    });
-  }
-
-  handleSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    /*
-    Add contact info and clear data  
-    */
-    this.props.addAppointment(this.state);
-    this.clearData();
+    addAppointment({title, contact, date, time});
+    setTitle("");
+    setContact("");
+    setDate("");
+    setTime("");
   };
 
-  render() {
-    return (
-      <div>
-        <section>
-          <h2>Add Appointment</h2>
-          <AppointmentForm 
-            title={this.state.title}
-            contact={this.state.contact}
-            date={this.state.date}
-            time={this.state.time}
-            setTitle={this.onTitleChange}
-            setContact={this.onContactChange}
-            setTime={this.setTime}
-            setDate={this.setDate}
-            handleSubmit={this.handleSubmit} />
-        </section>
-        <hr />
-        <section>
-          <h2>Appointments</h2>
-          <TileList arr={this.props.appointments} />
-        </section>
-      </div>
-    );
-  }
-
-}
+  return (
+    <>
+      <section>
+        <h2>Add Appointment</h2>
+        <AppointmentForm
+          contacts={contacts}
+          title={title}
+          setTitle={setTitle}
+          contact={contact}
+          setContact={setContact}
+          date={date}
+          setDate={setDate}
+          time={time}
+          setTime={setTime}
+          handleSubmit={handleSubmit}
+        />
+      </section>
+      <hr />
+      <section>
+        <h2>Appointments</h2>
+        <TileList tiles={appointments} />
+      </section>
+    </>
+  );
+};
